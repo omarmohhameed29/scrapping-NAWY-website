@@ -25,7 +25,6 @@ def get_top_areas(driver):
 def get_area_compounds(driver, area):
     driver.get(area)
     compounds_link = []
-    prev_page_url = None
 
     while True:
         # Explicit wait for the next page button
@@ -36,22 +35,23 @@ def get_area_compounds(driver, area):
                                curr_page_compounds]
         compounds_link.extend(page_compound_links)
 
-        try:
-            element = WebDriverWait(driver, 15).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, ".next-arrow.pagination-list"))
-            )
-            element.click()
-
-            # Wait for the current page's compounds_link to load
-
-            curr_page_url = driver.current_url
-            if curr_page_url == prev_page_url:
-                break
-            prev_page_url = curr_page_url
-        except:
+        curr_page_url = driver.current_url
+        if no_next_page(driver, curr_page_url):
             break
 
-    # Print the final count of compounds_link
     print("Total compounds_link:", len(compounds_link))
-    return compounds_link
-    # scrape_compounds(compounds_link)
+    # scrape compounds
+
+
+def no_next_page(driver, curr_page_url):
+    try:
+        element = WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable((By.CSS_SELECTOR, ".next-arrow.pagination-list"))
+        )
+        element.click()
+
+        # Wait for the current page's compounds_link to load
+
+        return curr_page_url == driver.current_url
+    except Exception as e:
+        print("Couldn't check next page,", e)

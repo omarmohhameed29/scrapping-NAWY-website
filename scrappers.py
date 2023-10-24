@@ -12,4 +12,4 @@ from helpers import get_area_compounds
 
 def scrape_top_areas(driver, top_areas):
     for area in top_areas:
-        compounds = get_area_compounds(driver, area)
+        get_area_compounds(driver, area)
