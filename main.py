@@ -1,16 +1,22 @@
-# This is a sample Python script.
+from helpers import get_top_areas
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import time
+import re
+import pandas as pd
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
+from scrappers import scrape_top_areas
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    driver = webdriver.Chrome()
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    driver.get("https://www.nawy.com/")
+
+    top_area = get_top_areas(driver)
+
+    scrape_top_areas(driver, top_area)
+
