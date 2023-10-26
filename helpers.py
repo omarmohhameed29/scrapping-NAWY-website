@@ -65,7 +65,7 @@ def get_types_of_properties(driver):
 
 
 def get_compound_properties(compound, types_of_properties, driver):
-# Re-fetch the elements on each iteration to avoid StaleElementReferenceException
+    # Re-fetch the elements on each iteration to avoid StaleElementReferenceException
     for i in range(len(types_of_properties)):
         types_of_properties = get_types_of_properties(driver)
         types_of_properties[i].click()
@@ -84,11 +84,11 @@ def get_compound_properties(compound, types_of_properties, driver):
 
     print("number of properties:", len(types_of_properties))
 
+
 # todo refactor scrape_current_page
 def scrape_current_page(driver):
     # todo scrape the content of each store them in pandas DataFrame to be extracted as CSV file later for analysis
     # todo get the city, region(compound) of each property
-    df = pd.DataFrame(columns=['Bedrooms', 'Bathrooms', 'Price', 'Area'])
     while True:
         try:
             property_cards = WebDriverWait(driver, 10).until(
@@ -135,13 +135,6 @@ def scrape_current_page(driver):
                 new_record = {'Bedrooms': num_bedrooms, 'Bathrooms': num_bathrooms, 'Price': price, 'Area': area}
                 new_record = pd.DataFrame([new_record])
                 print("new_record:", new_record)
-                print(type(new_record))
-                # Add the data as a new row in the DataFrame
-                # todo find a way to make the whole data in one fat DataFrame
-                df = pd.concat([df, new_record], ignore_index=True)
-                print("data:", df)
-                time.sleep(2)
-                print("added to dataframe")
 
 
 
@@ -149,28 +142,33 @@ def scrape_current_page(driver):
             print("Property Not Found*", e)
 
         # check for next page
-        try:
-            next_page = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".next-arrow.pagination-list.disabled"))
-            )
-            if len(next_page) == 2:
-                print("Last Page")
-                break
-        except:
-            print("couldn't load next page")
+        if no_next_properties_page(driver):
+            break
 
-        try:
-            element = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".next-arrow.pagination-list"))
-            )
-            # element = element[-1]
-            if len(element) == 2:
-                try:
-                    element[-1].click()
-                except:
-                    element[0].click()
-            else:
-                break
-        except:
-            print("error------------------------------------------------------------------------")
-            time.sleep(5)
+
+def no_next_properties_page(driver):
+    # check for next page
+    try:
+        next_page = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".next-arrow.pagination-list.disabled"))
+        )
+        if len(next_page) == 2:
+            print("Last Page")
+            return True
+    except Exception as e:
+        print("couldn't load next page:", e)
+
+    try:
+        element = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".next-arrow.pagination-list"))
+        )
+        # element = element[-1]
+        if len(element) == 2:
+            try:
+                element[-1].click()
+            except:
+                element[0].click()
+        else:
+            return True
+    except Exception as e:
+        print("error:", e)
