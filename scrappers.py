@@ -11,6 +11,7 @@ def scrape_top_areas(driver, top_areas):
 
 def scrape_area_compounds(driver, area_compounds):
     for compound in area_compounds:
+        print('*'*50)
         scrape_compound_properties(driver, compound)
 
 
@@ -21,8 +22,8 @@ def scrape_compound_properties(driver, compound):
     types_of_properties = get_types_of_properties(driver)
 
     # Iterate through property types and click on them
-    for i in range(len(types_of_properties)):
-        get_compound_properties(compound, types_of_properties, driver)
+    # for i in range(len(types_of_properties)):
+    get_compound_properties(compound, types_of_properties, driver)
 
 
 def scrape_current_page(driver):
