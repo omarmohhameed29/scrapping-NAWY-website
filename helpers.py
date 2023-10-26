@@ -1,11 +1,9 @@
 import time
-import re
-import pandas as pd
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+from ELT import Extract
 
 
 def get_top_areas(driver):
@@ -85,10 +83,7 @@ def get_compound_properties(compound, types_of_properties, driver):
     print("number of properties:", len(types_of_properties))
 
 
-# todo refactor scrape_current_page
 def scrape_properties(driver):
-    # todo scrape the content of each store them in pandas DataFrame to be extracted as CSV file later for analysis
-    # todo get the city, region(compound) of each property
     while True:
         try:
             property_cards = WebDriverWait(driver, 10).until(
@@ -107,33 +102,7 @@ def scrape_properties(driver):
 
 
 def get_properties_data(property_cards):
-    for property_card in property_cards:
-        # check living-apartment vs office
-        try:
-            bed_room_details = property_card.find_element(By.CLASS_NAME, "bedroominnerdetails")
-            num_bedrooms = bed_room_details.find_element(By.TAG_NAME, "p").get_attribute("innerHTML")
-            print("num_bedrooms:", num_bedrooms)
-
-            # get number of bathrooms
-            bath_room_details = property_card.find_element(By.CLASS_NAME, "bathroominnerdetails")
-            num_bathrooms = bath_room_details.find_element(By.TAG_NAME, "p").get_attribute("innerHTML")
-            print("num_bathrooms:", num_bathrooms)
-
-        except:
-            print("not living apartment")
-            num_bedrooms = 0
-            num_bathrooms = 0
-        # get area in sq_meters
-        area_details = property_card.find_element(By.CLASS_NAME, "type_area")
-        span_area = area_details.find_element(By.TAG_NAME, "span")
-        area = re.findall(r'\d+', span_area.get_attribute("innerHTML"))[0]
-        print("area:", area)
-
-        # get price
-        price_details = property_card.find_element(By.CLASS_NAME, "price")
-        div_price = price_details.find_element(By.TAG_NAME, "div")
-        price = div_price.get_attribute("innerHTML")
-        print("price:", price)
+    Extract(property_cards)
 
 
 def no_next_properties_page(driver):
