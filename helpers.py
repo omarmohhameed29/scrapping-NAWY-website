@@ -71,7 +71,7 @@ def get_compound_properties(compound, types_of_properties, driver):
         types_of_properties[i].click()
         print("Clicked on property type:", i)
 
-        scrape_current_page(driver)
+        scrape_properties(driver)
         print("current page scraped successfully")
         # Wait for the page to load new data (you may need to adjust this)
         time.sleep(2)
@@ -86,7 +86,7 @@ def get_compound_properties(compound, types_of_properties, driver):
 
 
 # todo refactor scrape_current_page
-def scrape_current_page(driver):
+def scrape_properties(driver):
     # todo scrape the content of each store them in pandas DataFrame to be extracted as CSV file later for analysis
     # todo get the city, region(compound) of each property
     while True:
@@ -96,47 +96,7 @@ def scrape_current_page(driver):
             )
             print("number of properties:", len(property_cards))
 
-            for property_card in property_cards:
-                try:
-                    bed_room_details = property_card.find_element(By.CLASS_NAME, "bedroominnerdetails")
-                    num_bedrooms = bed_room_details.find_element(By.TAG_NAME, "p").get_attribute("innerHTML")
-                    print("num_bedrooms:", num_bedrooms)
-
-                    # get number of bathrooms
-                    bath_room_details = property_card.find_element(By.CLASS_NAME, "bathroominnerdetails")
-                    num_bathrooms = bath_room_details.find_element(By.TAG_NAME, "p").get_attribute("innerHTML")
-                    print("num_bathrooms:", num_bathrooms)
-
-                except:
-                    print("not living apartment")
-                    num_bedrooms = 0
-                    num_bathrooms = 0
-                # get area in sq_meters
-                area_details = property_card.find_element(By.CLASS_NAME, "type_area")
-                span_area = area_details.find_element(By.TAG_NAME, "span")
-                area = re.findall(r'\d+', span_area.get_attribute("innerHTML"))[0]
-                print("area:", area)
-
-                # get price
-                price_details = property_card.find_element(By.CLASS_NAME, "price")
-                div_price = price_details.find_element(By.TAG_NAME, "div")
-                price = div_price.get_attribute("innerHTML")
-                price = price.replace(",", "")
-                print("price:", price)
-
-                # store each entry in corresponding list
-                # todo store data in pd DataFrame instead of lists
-                # num_bedrooms = int(num_bathrooms)
-                # num_bedrooms_list.append(int(num_bedrooms))
-                # num_bathrooms_list.append(int(num_bathrooms))
-                # area_sq_meters_list.append(int(area))
-                # price_list.append(int(price))
-
-                new_record = {'Bedrooms': num_bedrooms, 'Bathrooms': num_bathrooms, 'Price': price, 'Area': area}
-                new_record = pd.DataFrame([new_record])
-                print("new_record:", new_record)
-
-
+            get_properties_data(property_cards)
 
         except Exception as e:
             print("Property Not Found*", e)
@@ -144,6 +104,36 @@ def scrape_current_page(driver):
         # check for next page
         if no_next_properties_page(driver):
             break
+
+
+def get_properties_data(property_cards):
+    for property_card in property_cards:
+        # check living-apartment vs office
+        try:
+            bed_room_details = property_card.find_element(By.CLASS_NAME, "bedroominnerdetails")
+            num_bedrooms = bed_room_details.find_element(By.TAG_NAME, "p").get_attribute("innerHTML")
+            print("num_bedrooms:", num_bedrooms)
+
+            # get number of bathrooms
+            bath_room_details = property_card.find_element(By.CLASS_NAME, "bathroominnerdetails")
+            num_bathrooms = bath_room_details.find_element(By.TAG_NAME, "p").get_attribute("innerHTML")
+            print("num_bathrooms:", num_bathrooms)
+
+        except:
+            print("not living apartment")
+            num_bedrooms = 0
+            num_bathrooms = 0
+        # get area in sq_meters
+        area_details = property_card.find_element(By.CLASS_NAME, "type_area")
+        span_area = area_details.find_element(By.TAG_NAME, "span")
+        area = re.findall(r'\d+', span_area.get_attribute("innerHTML"))[0]
+        print("area:", area)
+
+        # get price
+        price_details = property_card.find_element(By.CLASS_NAME, "price")
+        div_price = price_details.find_element(By.TAG_NAME, "div")
+        price = div_price.get_attribute("innerHTML")
+        print("price:", price)
 
 
 def no_next_properties_page(driver):

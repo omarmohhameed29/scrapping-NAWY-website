@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from helpers import get_area_compounds, get_types_of_properties, get_compound_properties
+from helpers import get_area_compounds, get_types_of_properties, get_compound_properties, get_properties_data
 
 
 def scrape_top_areas(driver, top_areas):
@@ -32,3 +32,5 @@ def scrape_compound_properties(driver, compound):
         get_compound_properties(compound, types_of_properties, driver)
 
 
+def scrape_current_page(driver):
+    get_properties_data(driver)
