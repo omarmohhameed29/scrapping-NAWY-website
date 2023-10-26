@@ -117,3 +117,8 @@ def extract_property_type_and_compound_name(property_card):
     return property_type, compound
 
 
+
+def save_data_in_csv_file():
+    global data
+    data.to_csv('output.csv', index=False)
+

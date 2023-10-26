@@ -1,3 +1,5 @@
+import time
+
 from helpers import get_area_compounds, get_types_of_properties, get_compound_properties, get_properties_data
 
 
@@ -25,3 +27,6 @@ def scrape_compound_properties(driver, compound):
 
 def scrape_current_page(driver):
     get_properties_data(driver)
+
+    # minute sleep to avoid session blocking
+    time.sleep(60)

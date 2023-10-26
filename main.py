@@ -1,4 +1,4 @@
-from ELT import Transform
+from ELT import Transform, save_data_in_csv_file
 from helpers import get_top_areas
 from selenium import webdriver
 
@@ -15,4 +15,6 @@ if __name__ == '__main__':
     scrape_top_areas(driver, top_area)
 
     Transform()
+
+    save_data_in_csv_file()
 
