@@ -4,7 +4,7 @@ import pandas as pd
 from selenium.webdriver.common.by import By
 
 
-data = pd.DataFrame(columns=['Bedrooms', 'Bathrooms', 'Area', 'Price'])
+data = pd.DataFrame(columns=['Bedrooms', 'Bathrooms', 'Area', 'Price', 'Location'])
 
 
 def Extract(property_cards):
@@ -37,7 +37,10 @@ def Extract(property_cards):
         price = div_price.get_attribute("innerHTML")
         print("price:", price)
 
-        extracted_data = [num_bedrooms, num_bathrooms, area, price]
+
+        location_details = property_card.find_element(By.CLASS_NAME, "location")
+        location = location_details.get_attribute("innerHTML")
+        extracted_data = [num_bedrooms, num_bathrooms, area, price, location]
         Load(extracted_data)
 
 
@@ -51,8 +54,9 @@ def Load(extracted_data):
     num_bathrooms = extracted_data[1]
     area = extracted_data[2]
     price = extracted_data[3]
+    location = extracted_data[4]
     print('Storing')
-    new_record = {'Bedrooms': num_bedrooms, 'Bathrooms': num_bathrooms, 'Area': area, 'Price': price}
+    new_record = {'Bedrooms': num_bedrooms, 'Bathrooms': num_bathrooms, 'Area': area, 'Price': price, 'Location': location}
     print("new_record:", new_record)
 
     # append new record to data DF
