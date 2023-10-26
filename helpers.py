@@ -115,6 +115,7 @@ def no_next_properties_page(driver):
             print("Last Page")
             return True
     except Exception as e:
+        # todo fix error in sarai madinet nasr
         print("couldn't load next page:", e)
 
     try:
