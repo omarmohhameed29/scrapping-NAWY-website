@@ -1,4 +1,3 @@
-import time
 import re
 import pandas as pd
 from selenium.webdriver.common.by import By
@@ -26,8 +25,15 @@ def Extract(property_cards):
         Load(extracted_data)
 
 
-def Transform(extracted_data):
-    pass
+def Transform():
+    global data
+
+    # convert bedrooms, bathrooms and area from string to int
+    cols_need_to_be_int = ['Bedrooms', 'Bathrooms', 'Area']
+    data[cols_need_to_be_int] = data[cols_need_to_be_int].astype(int)
+
+    # remove , from price and convert to int
+    data['Price'] = data['Price'].str.replace(',', '', regex=True).astype(int)
 
 
 def Load(extracted_data):
