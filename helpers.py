@@ -3,7 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-from ELT import Extract
+from ELT import Extract, save_data_in_csv_file
 
 
 def get_top_areas(driver):
@@ -107,28 +107,31 @@ def get_properties_data(property_cards):
 
 def no_next_properties_page(driver):
     # check for next page
+
+    # handle case when there is no disabled buttons yet in the screen
     try:
-        next_page = WebDriverWait(driver, 10).until(
+        disabled_buttons = WebDriverWait(driver, 10).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".next-arrow.pagination-list.disabled"))
         )
-        if len(next_page) == 2:
-            print("Last Page")
-            return True
     except Exception as e:
-        # todo fix error in sarai madinet nasr
-        print("couldn't load next page:", e)
+        disabled_buttons = [0]
 
-    try:
-        element = WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".next-arrow.pagination-list"))
-        )
-        # element = element[-1]
-        if len(element) == 2:
-            try:
-                element[-1].click()
-            except:
-                element[0].click()
-        else:
-            return True
-    except Exception as e:
-        print("error:", e)
+    enabled_buttons = WebDriverWait(driver, 10).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".next-arrow.pagination-list"))
+    )
+    print('len of enabled buttons:',len(enabled_buttons))
+    print('len of disabled buttons:',len(disabled_buttons))
+    if len(disabled_buttons) == len(enabled_buttons):
+        return True
+
+    for enabled_button in enabled_buttons:
+        if enabled_button not in disabled_buttons:
+            print('clicked on next button')
+            enabled_button.click()
+            return False
+    # except Exception as e:
+    #     # todo fix error in sarai madinet nasr
+    #     print("couldn't load next page:", e)
+    #     save_data_in_csv_file()
+    #     quit()
+
