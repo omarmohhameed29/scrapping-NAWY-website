@@ -10,6 +10,7 @@ if __name__ == '__main__':
         driver = webdriver.Chrome()
 
         driver.get("https://www.nawy.com/")
+        driver.set_window_size(800, 600)  # Set the window size to a small dimension
 
         top_area = get_top_areas(driver)
 
