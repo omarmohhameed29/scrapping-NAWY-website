@@ -36,8 +36,9 @@ def get_area_compounds(driver, area):
         curr_page_url = driver.current_url
         if no_next_page(driver, curr_page_url):
             break
-
+    # todo fix redundant compounds
     print("Total compounds_link:", len(compounds_link))
+    print('Compounds links:', compounds_link)
     return compounds_link
 
 
@@ -52,35 +53,45 @@ def no_next_page(driver, curr_page_url):
 
         return curr_page_url == driver.current_url
     except Exception as e:
+        time.sleep(5)
         print("Couldn't check next page,", e)
 
 
 def get_types_of_properties(driver):
-    types_of_properties = WebDriverWait(driver, 10).until(
-        EC.presence_of_all_elements_located((By.CLASS_NAME, "sc-58c97ab0-0"))
-    )
-    return types_of_properties
+    try:
+        types_of_properties = WebDriverWait(driver, 10).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "sc-58c97ab0-0"))
+        )
+        return types_of_properties
+    except Exception as e:
+        print("Type of Property Not Found")
 
 
 def get_compound_properties(compound, types_of_properties, driver):
     # Re-fetch the elements on each iteration to avoid StaleElementReferenceException
-    for i in range(len(types_of_properties)):
-        types_of_properties = get_types_of_properties(driver)
-        types_of_properties[i].click()
-        print("Clicked on property type:", i)
+    try:
+        for i in range(len(types_of_properties)):
+            types_of_properties = get_types_of_properties(driver)
+            types_of_properties[i].click()
+            print("Clicked on property type:", i)
 
+            scrape_properties(driver)
+            print("current page scraped successfully")
+            # Wait for the page to load new data (you may need to adjust this)
+            time.sleep(2)
+
+            driver.get(compound)
+            print("get back to compound initial page at index:", i)
+
+            # Wait for the page to load (again, adjust timing if needed)
+            time.sleep(2)
+
+        print("number of properties:", len(types_of_properties))
+
+    except:
         scrape_properties(driver)
-        print("current page scraped successfully")
-        # Wait for the page to load new data (you may need to adjust this)
-        time.sleep(2)
 
-        driver.get(compound)
-        print("get back to compound initial page at index:", i)
 
-        # Wait for the page to load (again, adjust timing if needed)
-        time.sleep(2)
-
-    print("number of properties:", len(types_of_properties))
 
 
 def scrape_properties(driver):
@@ -129,9 +140,4 @@ def no_next_properties_page(driver):
             print('clicked on next button')
             enabled_button.click()
             return False
-    # except Exception as e:
-    #     # todo fix error in sarai madinet nasr
-    #     print("couldn't load next page:", e)
-    #     save_data_in_csv_file()
-    #     quit()
 

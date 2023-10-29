@@ -6,15 +6,19 @@ from selenium import webdriver
 from scrappers import scrape_top_areas
 
 if __name__ == '__main__':
-    driver = webdriver.Chrome()
+    try:
+        driver = webdriver.Chrome()
 
-    driver.get("https://www.nawy.com/")
+        driver.get("https://www.nawy.com/")
 
-    top_area = get_top_areas(driver)
+        top_area = get_top_areas(driver)
 
-    scrape_top_areas(driver, top_area)
+        scrape_top_areas(driver, top_area)
 
-    Transform()
+        Transform()
 
-    save_data_in_csv_file()
+        save_data_in_csv_file()
+    except Exception as e:
+        print('Final Exception:', e)
+        save_data_in_csv_file()
 
